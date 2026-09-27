@@ -1,0 +1,69 @@
+name: "📅 Weekly Update"
+
+on:
+  schedule:
+    - cron: '0 8 * * 1'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  weekly-update:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Configure Git
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+      - name: Update README with date and stats
+        run: |
+          CURRENT_DATE=$(date -u +"%Y-%m-%d")
+
+          # Count total links across content files
+          TOTAL_LINKS=0
+          if [ -d contents ]; then
+            for f in contents/*.md; do
+              if [ -f "$f" ]; then
+                COUNT=$(grep -cE 'https?://' "$f" 2>/dev/null || echo 0)
+                TOTAL_LINKS=$((TOTAL_LINKS + COUNT))
+              fi
+            done
+          fi
+
+          # Update or insert Last Updated badge
+          if grep -q "last.updated:" README.md; then
+            sed -i "s|last updated: .*|last updated: $CURRENT_DATE|g" README.md
+          else
+            sed -i "/^\[!\[Awesome/a [![Last Updated](https://img.shields.io/badge/last%20updated-$CURRENT_DATE-blue.svg)](https://github.com/${GITHUB_REPOSITORY})" README.md
+          fi
+
+          # Remove old stats section if present
+          sed -i '/<!-- WEEKLY_STATS_START -->/,/<!-- WEEKLY_STATS_END -->/d' README.md
+
+          # Append new weekly stats section
+          echo "" >> README.md
+          echo "---" >> README.md
+          echo "" >> README.md
+          echo "<!-- WEEKLY_STATS_START -->" >> README.md
+          echo "## 📊 Weekly Stats" >> README.md
+          echo "" >> README.md
+          printf "| Metric | Value |\n|--------|-------|\n" >> README.md
+          printf "| Total Links | **%s** |\n" "$TOTAL_LINKS" >> README.md
+          printf "| Last Updated | **%s** |\n" "$CURRENT_DATE" >> README.md
+          printf "| Maintained By | [GitHub Actions](https://github.com/%s/actions) |\n" "$GITHUB_REPOSITORY" >> README.md
+          echo "<!-- WEEKLY_STATS_END -->" >> README.md
+
+      - name: Commit and push changes
+        run: |
+          git add -A
+          if git diff --cached --quiet; then
+            echo "No changes to commit"
+          else
+            git commit -m "📊 Weekly update: badge refresh and stats — $(date -u +%Y-%m-%d)"
+            git push
+          fi

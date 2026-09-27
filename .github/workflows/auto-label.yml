@@ -1,0 +1,62 @@
+name: "🏷️ Auto Label PRs"
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  auto-label:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Label new resource PRs
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const pr = context.payload.pull_request;
+            const title = (pr.title || '').toLowerCase();
+            const body = (pr.body || '').toLowerCase();
+
+            const labels = [];
+
+            // Check for new-resource signals
+            if (title.includes('new resource') || title.includes('add ') ||
+                title.includes('new tool') || title.includes('new link') ||
+                body.includes('new resource') || body.includes('adding') ||
+                body.includes('submit')) {
+              labels.push('new-resource');
+            }
+
+            // Check for doc changes
+            if (title.includes('doc') || title.includes('readme') ||
+                title.includes('fix typo') || body.includes('documentation')) {
+              labels.push('documentation');
+            }
+
+            // Check for tool additions
+            if (title.includes('tool') || title.includes('script') ||
+                body.includes('new tool')) {
+              labels.push('tool');
+            }
+
+            if (labels.length > 0) {
+              await github.rest.issues.addLabels({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: pr.number,
+                labels: labels
+              });
+              console.log(`Added labels: ${labels.join(', ')}`);
+            } else {
+              // Default label for PRs without specific signals
+              await github.rest.issues.addLabels({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: pr.number,
+                labels: ['enhancement']
+              });
+              console.log('Added default label: enhancement');
+            }
