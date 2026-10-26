@@ -2,6 +2,7 @@ Awesome Indonesian Cybersecurity
 =================================
 
 [![Awesome](https://awesome.re/badge.svg)](https://awesome.re)
+[![Last Updated](https://img.shields.io/badge/last%20updated-2026-10-26-blue.svg)](https://github.com/DHO212/awesome-indonesian-cybersecurity)
 [![Last Updated](https://img.shields.io/badge/last%20updated-2026-10-19-blue.svg)](https://github.com/DHO212/awesome-indonesian-cybersecurity)
 [![Last Updated](https://img.shields.io/badge/last%20updated-2026-10-12-blue.svg)](https://github.com/DHO212/awesome-indonesian-cybersecurity)
 [![Last Updated](https://img.shields.io/badge/last%20updated-2026-10-05-blue.svg)](https://github.com/DHO212/awesome-indonesian-cybersecurity)
@@ -89,12 +90,15 @@ To the extent possible under law, the contributors have waived all copyright and
 
 ---
 
+
+---
+
 <!-- WEEKLY_STATS_START -->
 ## 📊 Weekly Stats
 
 | Metric | Value |
 |--------|-------|
 | Total Links | **337** |
-| Last Updated | **2026-10-19** |
+| Last Updated | **2026-10-26** |
 | Maintained By | [GitHub Actions](https://github.com/DHO212/awesome-indonesian-cybersecurity/actions) |
 <!-- WEEKLY_STATS_END -->
